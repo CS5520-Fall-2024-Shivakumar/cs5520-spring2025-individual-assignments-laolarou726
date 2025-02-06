@@ -1,7 +1,10 @@
 package com.laolarou.helloworld;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuInflater;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +25,17 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    public void goToQuicCalcActivity(View v){
+        startActivity(new Intent(MainActivity.this, QuicCalcActivity.class));
+    }
+
+    public void showMenu(View v){
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.test_menu, popup.getMenu());
+        popup.show();
     }
 
     public void showToast(View v){
