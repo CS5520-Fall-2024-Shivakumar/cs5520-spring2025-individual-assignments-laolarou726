@@ -1,6 +1,8 @@
 package com.laolarou.helloworld;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,14 +49,7 @@ public class ContactsCollectorActivity extends AppCompatActivity {
         contactAdapter = new ContactAdapter(this, contactList);
         recyclerView.setAdapter(contactAdapter);
 
-        // Restore data if available
-        if (savedInstanceState != null) {
-            ArrayList<Contact> savedContacts = savedInstanceState.getParcelableArrayList(KEY_CONTACTS);
-            if (savedContacts != null) {
-                contactList.addAll(savedContacts);
-                contactAdapter.notifyDataSetChanged();
-            }
-        }
+        loadContacts();
     }
 
     public void createNewContact(View v) {
@@ -109,6 +104,44 @@ public class ContactsCollectorActivity extends AppCompatActivity {
             contactList.clear();
             contactList.addAll(savedContacts);
             contactAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveContacts();
+    }
+
+    // Save contacts in SharedPreferences
+    private void saveContacts() {
+        SharedPreferences sharedPreferences = getSharedPreferences("contacts_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        StringBuilder contactData = new StringBuilder();
+        for (Contact contact : contactList) {
+            contactData.append(contact.getName()).append("|").append(contact.getPhone()).append("\n");
+        }
+
+        editor.putString("contacts", contactData.toString());
+        editor.apply();
+    }
+
+    // Load contacts from SharedPreferences
+    private void loadContacts() {
+        SharedPreferences sharedPreferences = getSharedPreferences("contacts_prefs", MODE_PRIVATE);
+        String storedContacts = sharedPreferences.getString("contacts", "");
+
+        contactList.clear();
+
+        if (!storedContacts.isEmpty()) {
+            String[] contactsArray = storedContacts.split("\n");
+            for (String contactLine : contactsArray) {
+                String[] parts = contactLine.split("\\|");
+                if (parts.length == 2) {
+                    contactList.add(new Contact(parts[0], parts[1]));
+                }
+            }
         }
     }
 }
