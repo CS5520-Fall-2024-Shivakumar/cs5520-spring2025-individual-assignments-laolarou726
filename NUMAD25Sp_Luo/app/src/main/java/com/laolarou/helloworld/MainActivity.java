@@ -52,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, ContactsCollectorActivity.class));
     }
 
+    public void goToFindPrimesActivity(View v) {
+        startActivity(new Intent(MainActivity.this, FindPrimesActivity.class));
+    }
+
+
     // Check if call permission is granted, otherwise request it
     private void checkCallPermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
