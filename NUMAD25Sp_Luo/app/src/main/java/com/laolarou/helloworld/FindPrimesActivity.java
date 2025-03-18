@@ -95,6 +95,8 @@ public class FindPrimesActivity extends AppCompatActivity {
     private void stopPrimeSearch() {
         isRunning = false;
         stopRequested = true;
+        lastCheckedNumber = 3;
+        lastPrimeNumber = 2;
     }
 
     private boolean isPrime(int num) {
