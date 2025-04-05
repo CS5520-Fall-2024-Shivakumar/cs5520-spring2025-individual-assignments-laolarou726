@@ -50,7 +50,10 @@ public class FindPrimesActivity extends AppCompatActivity {
         this.getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (!isRunning) return;
+                if (!isRunning) {
+                    finish();
+                    return;
+                }
 
                 new AlertDialog.Builder(FindPrimesActivity.this)
                         .setTitle("Confirm Exit")
@@ -82,7 +85,6 @@ public class FindPrimesActivity extends AppCompatActivity {
 
     private void startPrimeThread() {
         isRunning = true;
-        stopRequested = true;
         resetState();
 
         new Thread(() -> {
