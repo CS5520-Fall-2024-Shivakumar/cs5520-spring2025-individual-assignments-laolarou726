@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.concurrent.Executors;
+
 public class FindPrimesActivity extends AppCompatActivity {
     private TextView lastCheckedNumberText;
     private TextView lastFoundPrimeNumberText;
@@ -71,6 +73,8 @@ public class FindPrimesActivity extends AppCompatActivity {
     private void resetState() {
         if (!stopRequested) return;
 
+        lastCheckedNumberText.setText("0");
+        lastFoundPrimeNumberText.setText("0");
         lastCheckedNumber = 3;
         lastPrimeNumber = 2;
         stopRequested = false;
@@ -78,18 +82,27 @@ public class FindPrimesActivity extends AppCompatActivity {
 
     private void startPrimeThread() {
         isRunning = true;
+        stopRequested = true;
         resetState();
 
-        var primeThread = new Thread(() -> {
-            for (int i = lastCheckedNumber; isRunning; i += 2) { // Skip even numbers
+        new Thread(() -> {
+            for (int i = lastCheckedNumber; isRunning; i += 2) {
+                // Skip even numbers
+                var finalI = i;
+
                 if (isPrime(i)) {
                     lastPrimeNumber = i;
-                    updateUI(String.valueOf(lastCheckedNumber), String.valueOf(i));
+                    runOnUiThread(() -> {
+                        lastFoundPrimeNumberText.setText(String.valueOf(finalI));
+                    });
                 }
                 lastCheckedNumber = i;
+
+                runOnUiThread(() -> {
+                    lastCheckedNumberText.setText(String.valueOf(finalI));
+                });
             }
-        });
-        primeThread.start();
+        }).start();
     }
 
     private void stopPrimeSearch() {
@@ -105,16 +118,6 @@ public class FindPrimesActivity extends AppCompatActivity {
             if (num % i == 0) return false;
         }
         return true;
-    }
-
-    private void updateUI(String lastVerifiedNumber, String lastPrimeNumber) {
-        getMainExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                lastCheckedNumberText.setText(lastVerifiedNumber);
-                lastFoundPrimeNumberText.setText(lastPrimeNumber);
-            }
-        });
     }
 
     @Override
